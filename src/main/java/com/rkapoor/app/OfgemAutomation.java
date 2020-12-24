@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 
 public class OfgemAutomation {
@@ -24,6 +25,7 @@ public class OfgemAutomation {
 			Thread.sleep(4000);
 
 			List<WebElement> emails = driver.findElements(By.className("zE"));
+			
 			List<MailDetails> mds = new ArrayList<>();
 			Map<MailDetails, WebElement> mdToWeMap = new HashMap<>();
 
@@ -33,35 +35,42 @@ public class OfgemAutomation {
 				
 				WebElement we = emails.get(i);
 				
-				//System.out.println(we.getText());
+				RemoteWebElement rwe = (RemoteWebElement) we;
+				
 				
 				MailDetails md = MailDetails.from(we.getText());
 				mds.add(md);
 				
 				mdToWeMap.put(md, we);
 				
-				//System.out.println(md);
-			
-
 			}
 			
-			//List<MailDetails> ofgemEmails = MailDetails.filter(mds);
-			
-			
+			System.out.println("Mail details");
+			System.out.println("============");
 			mds.stream().forEach(md -> System.out.println(md));
 			
-			MailDetails md = MailDetails.latestEmail(mds);
+			MailDetails mdLatest = MailDetails.latestEmail(mds);
 			
-			System.out.println("====================");
-			System.out.println(md);
-			//driver.close();
+			System.out.println("Latest Mail details");
+			System.out.println("===================");
+			System.out.println(mdLatest);
 			
 			Thread.sleep(4000);
 			
-			
+			mdToWeMap.get(mdLatest).click();
+
+			Thread.sleep(4000);
+
+			// Find the delete button
 			WebElement groupElement = driver.findElement(By.xpath("//div[@class='iH bzn']//div[@class='G-tF']//div[2][@class='G-Ni G-aE J-J5-Ji']"));
 			Actions action = new Actions(driver);
 			action.moveToElement(groupElement).build().perform();
-			driver.findElement(By.xpath("//div[@aria-label='Delete']//div[@class='asa']")).click();
+			WebElement deleteButton = driver.findElement(By.xpath("//div[@aria-label='Delete']//div[@class='asa']"));
+			
+			//Click the delete button
+			deleteButton.click();
+			
+			Thread.sleep(4000);
+			
 	}
 }
