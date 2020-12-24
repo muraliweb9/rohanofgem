@@ -1,6 +1,9 @@
 package com.rkapoor.app;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import lombok.Builder;
@@ -18,6 +21,7 @@ public class MailDetails {
 	private String subject;
 	private String body;
 	private String time;
+	private Boolean ofgemEmail;
 	
 	public static MailDetails from(String text) {
 		
@@ -33,9 +37,30 @@ public class MailDetails {
 	public static List<MailDetails> filter(List<MailDetails> mds) {
 		
 		return mds.stream()
-				.filter(md -> SUBJECT.equals(md.getSubject()) && BODY.equals(md.getBody()))
+				.filter(md -> md.getOfgemEmail())
 				.collect(Collectors.toList());
 		
+	}
+	
+	public Boolean getOfgemEmail() {
+		return SUBJECT.equals(getSubject()) && BODY.equals(getBody());
+	}
+	
+	public static MailDetails latestEmail(List<MailDetails> mds) {
+		List<MailDetails> filtered = filter(mds);
+		Set<MailDetails> sortedMailDetails = new TreeSet<>(new MailDetailsComparator());
+		sortedMailDetails.addAll(filtered);
+		return filtered.get(0);
+	}
+}
+
+class MailDetailsComparator implements Comparator<MailDetails> {
+
+	@Override
+	public int compare(MailDetails o1, MailDetails o2) {
+		String time1 = o1.getTime();
+		String time2 = o2.getTime();
+		return time1.compareTo(time2);
 	}
 	
 }
